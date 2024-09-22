@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Coded by: Jsmoreira02
+# https://github.com/Jsmoreira02
+
 SUPPORTED_FILE_READ_BINARIES=("gdb" "ruby" "python" "perl" "cp" "vim" "cat" "awk" "openvpn" "gcc" "base32" "base58" "sed" "base64" "arp" "bash" "curl" "more" "neofetch" "git" "dig")
 SUPPORTED_SUDO_BINARIES=("awk" "ash" "chroot" "apt" "bash" "at" "lua" "choom" "sudo" "php" "pip" "tmux" "node" "pexec" "pkexec" "csh" "socat" "dash" "ruby" "python" "ed" "env" "ssh" "expect" "vi" "vim" "mount" "make" "git" "find" "ftp" "perl" "script" "gcc" "cp")
 SUPPORTED_SUID_BINARIES=("ash" "gdb" "bash" "php" "chroot" "node" "pexec" "csh" "dash" "python" "env" "choom" "expect" "vim" "rvim" "vimdiff" "make" "find")
