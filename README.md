@@ -20,6 +20,11 @@ Tool to make privilege escalation on linux systems easier, using GTFObins (get t
 
 > GTFOBins is a community-driven project that aims to collect Unix binaries that can be abused for privilege escalation. Each entry in the GTFOBins database provides detailed information about a specific binary, including its functionality, potential vulnerabilities, and instructions on how to exploit it to gain escalated privileges. The database serves as a valuable resource for security researchers and system administrators.
 
+## Upload directly to the target machine:
+```bash
+curl https://raw.githubusercontent.com/Jsmoreira02/CatBinaries/refs/heads/main/CatBinaries.sh -o /tmp/CatBinaries.sh
+```
+
 ## Identify Vulnerable Binaries:
   ![Gravaratela_20240815_195946online-video-cutter com-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/8f154db1-bf71-44d0-8469-361c36697d86)
 
