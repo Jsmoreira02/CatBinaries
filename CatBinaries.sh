@@ -3,7 +3,7 @@
 # Coded by: Jsmoreira02
 # https://github.com/Jsmoreira02
 
-SUPPORTED_FILE_READ_BINARIES=("gdb" "ruby" "python" "perl" "cp" "vim" "cat" "awk" "openvpn" "gcc" "base32" "base58" "sed" "base64" "arp" "bash" "curl" "more" "neofetch" "git" "dig")
+SUPPORTED_FILE_READ_BINARIES=("gdb" "look" "ruby" "python" "perl" "cp" "vim" "cat" "awk" "openvpn" "gcc" "base32" "base58" "sed" "base64" "arp" "bash" "curl" "more" "neofetch" "git" "dig")
 SUPPORTED_SUDO_BINARIES=("awk" "ash" "chroot" "apt" "bash" "at" "lua" "choom" "sudo" "php" "pip" "tmux" "node" "pexec" "pkexec" "csh" "socat" "dash" "ruby" "python" "ed" "env" "ssh" "expect" "vi" "vim" "mount" "make" "git" "find" "ftp" "perl" "script" "gcc" "cp")
 SUPPORTED_SUID_BINARIES=("ash" "gdb" "bash" "php" "chroot" "node" "pexec" "csh" "dash" "python" "env" "choom" "expect" "vim" "rvim" "vimdiff" "make" "find")
 SUPPORTED_CAP_BINARIES=("gdb" "node" "php" "python" "ruby" "view" "vim" "rvim" "vimdiff")
@@ -30,47 +30,15 @@ function banner_logo() {
 function usage() {
     printf "Usage: %s [--bin <binary>] [--mode <operation mode>]\n" "$(basename "$0")"
     printf "  -b/--bin <binary>                 Specify binary for operation mode (In case you know which one is vulnerable)\n"
-    printf "  -cb/--check_bin                   Activate allowed_executables function\n"
     printf "  -fr/--file_to_read                Specify the path of the file to read\n"
-    printf "  -bc/--binary_capabilities         Find all the binaries with capabilities set on them across the entire filesystem\n"
-    printf "  -cs/--check_suid                  Locate all binaries set with SUID (Set User Identification) permissions\n"
-    printf "  -m/--mode <Operating Mode>        Specify operation mode (In case you know which operating mode will work)\n"
+    printf "  -m/--mode <Operating Mode>        Specify operation mode [sudobin, suidbin, capabilities, file_read]\n"
+    printf "  -cb/--check_bin                   [sudo] Check for executables allowed in sudo\n"
+    printf "  -bc/--binary_capabilities         [capabilities] Find all the binaries with capabilities\n"
+    printf "  -cs/--check_suid                  [suid] Locate all binaries set with SUID (Set User Identification) permissions\n"
     printf "  -h/--help                         Show Help Message\n\n"
     printf "Operation Modes => [sudobin, bincap, suidbin, fileread]\n"
+    
     exit 1
-}
-
-function check_sudo() {
-    local sudo_perms list_users
-    sudo_perms=$(sudo -v 2>&1)
-    list_users=$(awk -F: '$6 ~ /\/home/ {print $1}' /etc/passwd)
-
-    if [[ $sudo_perms =~ "Sorry, user may not run sudo" ]]; then
-        printf "[\033[0;31mX\033[0m] User does not have access to sudo privileges on the system\n"
-        printf "[\033[0;32m->\033[0m] Try these other ones:\n%s\n" "$list_users"
-        return 1
-    else
-        printf "[\033[0;32mOK!\033[0m] User has got sudo rights!\n"
-    fi
-}
-
-function sudo_binaries() {
-    local sudo_output executables executable_list
-    check_sudo || return 1
-
-    sudo_output=$(sudo -l 2>/dev/null)
-    if [[ -z "$sudo_output" ]]; then
-        printf "[\033[0;31mX\033[0m] Failed to retrieve sudo list.\n" >&2
-        return 1
-    fi
-
-    executables=$(printf "%s\n" "$sudo_output" | grep -oP '(/[\w/]+)' | awk -F'/' '{print $NF}' | sort -u)
-    mapfile -t executable_list < <(printf "%s\n" "$executables")
-
-    printf "[\033[0;32m>>>\033[0m] Executables allowed by sudo:\n"
-    for executable in "${executable_list[@]}"; do
-        echo -e "\033[0;36m$executable\033[0m"
-    done
 }
 
 function modes() {
@@ -171,6 +139,7 @@ function modes() {
                     history -r "$file_to_read"
                     history ;;
                 cat) cat "$file_to_read" ;;
+                look) look '' "$file_to_read" ;;
                 curl) curl "file://$file_to_read" ;;
                 dig) dig -f "$file_to_read" ;;
                 gcc) gcc -xc /dev/null -o "$file_to_read" ;;
@@ -210,6 +179,39 @@ function modes() {
         esac
     fi
 
+}
+
+function check_sudo() {
+    local sudo_perms list_users
+    sudo_perms=$(sudo -v 2>&1)
+    list_users=$(awk -F: '$6 ~ /\/home/ {print $1}' /etc/passwd)
+
+    if [[ $sudo_perms =~ "Sorry, user may not run sudo" ]]; then
+        printf "[\033[0;31mX\033[0m] User does not have access to sudo privileges on the system\n"
+        printf "[\033[0;32m->\033[0m] Try these other ones:\n%s\n" "$list_users"
+        return 1
+    else
+        printf "[\033[0;32mOK!\033[0m] User has got sudo rights!\n"
+    fi
+}
+
+function list_sudo_binaries() {
+    local sudo_output executables executable_list
+    check_sudo || return 1
+
+    sudo_output=$(sudo -l 2>/dev/null)
+    if [[ -z "$sudo_output" ]]; then
+        printf "[\033[0;31mX\033[0m] Failed to retrieve sudo list.\n" >&2
+        return 1
+    fi
+
+    executables=$(printf "%s\n" "$sudo_output" | grep -oP '(/[\w/]+)' | awk -F'/' '{print $NF}' | sort -u)
+    mapfile -t executable_list < <(printf "%s\n" "$executables")
+
+    printf "[\033[0;32m>>>\033[0m] Executables allowed by sudo:\n"
+    for executable in "${executable_list[@]}"; do
+        echo -e "\033[0;36m$executable\033[0m"
+    done
 }
 
 function list_capabilities() {
@@ -267,7 +269,7 @@ function privilege_escalations() {
     local binary="$1" operation_mode="$2" file_to_read="$3" validate=0
 
     if [[ -z $operation_mode ]]; then
-        echo -e "\033[0;31m[X]\033[0m Please select an operating mode => {sudo, capabilities, file_read}\n" >&2
+        echo -e "\033[0;31m[X]\033[0m Please select an operating mode => {sudo, SUID, capabilities, file_read}\n" >&2
         return 1
     fi
 
@@ -380,7 +382,7 @@ function parse_args() {
     fi
 
     if [[ $sudo_binaries -eq 1 ]]; then
-        sudo_binaries
+        list_sudo_binaries
     fi
 
     if [[ $binary_capabilities -eq 1 ]]; then
