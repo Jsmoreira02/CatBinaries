@@ -25,7 +25,7 @@ Tool to make privilege escalation on linux systems easier, using GTFObins (get t
 curl https://raw.githubusercontent.com/Jsmoreira02/CatBinaries/refs/heads/main/CatBinaries.sh -o /tmp/CatBinaries.sh
 ```
 
-## Identify Vulnerable Binaries:
+## Identify Vulnerable Binaries - Outdated video:
   ![Gravaratela_20240815_195946online-video-cutter com-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/8f154db1-bf71-44d0-8469-361c36697d86)
 
 ## Exploit Methods:
@@ -39,13 +39,40 @@ curl https://raw.githubusercontent.com/Jsmoreira02/CatBinaries/refs/heads/main/C
 
 - **File Read**: It reads data from files, it may be used to do privileged reads
 
+##
+
+## New techniques and mechanics:
+
+#### ❗ Now you can add the full/custom path of the binary or sudo as a prefix. ❗:
+- The script will recognize the binary and use the normally selected exploit method, but more versatile and new options to exploit the target
+
+  ### Examples:
+
+   - #### Sudo prefix:
+  
 --------------------------------
+    
+  ![Gravaodetelade2025-02-2202-03-44-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/947e4027-2600-4be4-aa1c-c5f9f0f73a44)
+
+--------------------------------
+   - #### Custom PATH:
+
+--------------------------------
+
+![Gravaodetelade2025-02-2202-25-40-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/eacc4ff9-a6db-4564-b606-5d518c64bf2e)
+
+--------------------------------
+
+## New Features:
+
+  - ⏰ **COMING SOON**: New form of exploitation: Library Load
+  - ⏰ **COMING SOON**: Clearing the tracks feature
+##
+
+- This script will constantly receive new binaries and forms of exploitation
 
 ![Captura de imagem_20240815_202247](https://github.com/user-attachments/assets/45e90ab7-1c7d-42e7-b555-2d0099db3a0a)
 
---------------------------------
-
-- This script will constantly receive new binaries and forms of exploitation
 
 ## Check out the source of inspiration
 
