@@ -35,6 +35,8 @@ curl https://raw.githubusercontent.com/Jsmoreira02/CatBinaries/refs/heads/main/C
 
 - **Capabilities**: Exploit CAP_SETUID capability
 
+- **Reverse Shell**: Remote connection
+
 - **File Read**: It reads data from files, it may be used to do privileged reads
 
 --------------------------------
