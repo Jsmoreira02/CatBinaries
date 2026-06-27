@@ -66,7 +66,6 @@ curl https://raw.githubusercontent.com/Jsmoreira02/CatBinaries/refs/heads/main/C
 ## New Features:
 
   - ⏰ **COMING SOON**: New form of exploitation: Library Load
-  - ⏰ **COMING SOON**: Clearing the tracks feature
 ##
 
 - This script will constantly receive new binaries and forms of exploitation
